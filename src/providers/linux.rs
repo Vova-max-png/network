@@ -14,6 +14,7 @@ pub struct Network {
     available_networks: Vec<Net>,
 }
 
+// TODO: make functions work on linux
 impl NetworkBehavior for Network {
     fn new() -> Self {
         Self {

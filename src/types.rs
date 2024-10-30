@@ -16,7 +16,8 @@ pub enum EncryptionType {
 #[derive(Debug)]
 pub enum Error {
     GettingAroundFailed,
-    FailedToReturnAroundNetworks
+    FailedToReturnAroundNetworks,
+    NetworkProfileNotFound
 }
 
 #[derive(Debug)]

@@ -13,5 +13,5 @@ pub trait NetworkBehavior {
     fn new() -> Self;
     fn get_around(&self) -> Result<Self, Error> where Self: Sized;
     fn print_around(&self) -> Result<&Vec<Net>, Error>;
-    fn connect(&self, ssid: &str, pass: &str);
+    fn connect(&self, ssid: &str, pass: &str) -> Result<(), Error>;
 }

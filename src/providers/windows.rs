@@ -20,7 +20,7 @@ impl NetworkBehavior for Network {
             .args(["wlan", "show", "networks"])
             .output();
 
-        match(res) {
+        match res {
             Err(e) => {return Err(Error::GettingAroundFailed)},
             _ => {}
         }
@@ -47,12 +47,12 @@ impl NetworkBehavior for Network {
 
         let mut nets: Vec<Net> = Vec::new();
         for i in 0..out.len() {
-            let network_type = match(network_types[i]) {
+            let network_type = match network_types[i] {
                 "Infrastructure" => NetworkType::Infrastructure,
                 _ => NetworkType::Unknown
             };
 
-            let auth_type = match(auth_types[i]) {
+            let auth_type = match auth_types[i] {
                 "WPA2-Personal" => EncryptionType::Wpa2,
                 _ => EncryptionType::Unknown
             };
@@ -73,12 +73,16 @@ impl NetworkBehavior for Network {
         Ok(&self.available_networks)
     }
 
-    fn connect(&self, ssid: &str, pass: &str) {
+    fn connect(&self, ssid: &str, pass: &str) -> Result<(), Error> {
         let res = Command::new("netsh")
-            .args(["wlan", "set", "hostednetwork", "mode=allow", format!("ssid={}", ssid).as_str(), format!("key={}", pass).as_str()])
-            .output();
+            .args(["wlan", "connect", format!("name={}", ssid).as_str()])
+            .output().unwrap();
 
-        println!("{:#?}", res);
+        if String::from_utf8_lossy(&res.stdout).contains("There is no profile") {
+            return Err(Error::NetworkProfileNotFound);
+        }
+
+        Ok(())
     }
 }
 
