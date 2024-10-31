@@ -19,10 +19,3 @@ pub enum Error {
     FailedToReturnAroundNetworks,
     NetworkProfileNotFound
 }
-
-#[derive(Debug)]
-pub struct Net {
-    pub(crate) ssid: Box<str>,
-    pub(crate) typ: NetworkType,
-    pub(crate) encryption: EncryptionType,
-}

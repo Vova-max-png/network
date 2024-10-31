@@ -1,11 +1,17 @@
 use std::process::Command;
 use crate::providers::NetworkBehavior;
 
-use crate::types::Net;
 use crate::{types::{EncryptionType, Error, NetworkType}};
 
 pub struct Network {
     available_networks: Vec<Net>,
+}
+
+#[derive(Debug)]
+pub struct Net {
+    ssid: Box<str>,
+    typ: NetworkType,
+    encryption: EncryptionType,
 }
 
 impl NetworkBehavior for Network {
@@ -15,7 +21,7 @@ impl NetworkBehavior for Network {
         }
     }
 
-    fn get_around(&self) -> Result<Self, Error> {
+    fn find_around(&self) -> Result<Self, Error> {
         let res = Command::new("netsh")
             .args(["wlan", "show", "networks"])
             .output();
@@ -69,7 +75,7 @@ impl NetworkBehavior for Network {
         })
     }
 
-    fn print_around(&self) -> Result<&Vec<Net>, Error> {
+    fn get_around(&self) -> Result<&Vec<Net>, Error> {
         Ok(&self.available_networks)
     }
 
@@ -87,6 +93,24 @@ impl NetworkBehavior for Network {
 }
 
 impl Net {
+    pub fn new(ssid: &str, typ: &str, encryption: &str) -> Self {
+        let network_type = match typ {
+            "Infrastructure" => NetworkType::Infrastructure,
+            _ => NetworkType::Unknown
+        };
+
+        let auth_type = match encryption {
+            "WPA2-Personal" => EncryptionType::Wpa2,
+            _ => EncryptionType::Unknown
+        };
+
+        Self {
+            ssid: ssid.into(),
+            typ: network_type,
+            encryption: auth_type
+        }
+    }
+
     pub fn get_ssid(&self) -> &str {
         &self.ssid
     }
